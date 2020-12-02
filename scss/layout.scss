@@ -1,0 +1,48 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 16px;
+  width: 100%;
+
+  .row {
+    width: 100%;
+
+    .row__label {
+      padding-top: 8px;
+      padding-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    canvas {
+      border: 1px solid grey;
+      background: black;
+      width: 400px;
+      height: 200px;
+    }
+
+    textarea {
+      width: 100%;
+      border-radius: 0;
+      border: none;
+      outline: none;
+      background: black;
+      color: grey;
+      outline: 1px solid grey;
+    }
+
+    button {
+      padding: 8px;
+      border: 1px solid grey;
+      user-select: none;
+      border: none;
+      border-radius: 0;
+      outline: none;
+      cursor: pointer;
+    }
+  }
+
+  .controls {
+    padding-top: 8px;
+  }
+}
