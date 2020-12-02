@@ -4,13 +4,14 @@ class Day2 {
   solve(text) {
     let p1 = 0;
     let p2 = 0;
-    
+
     const data = text.trim().split('\n');
     data.forEach(row => {
-      const i = parseInt(row.split('-')[0]);
-      const j = parseInt(row.split(' ')[0].split('-')[1]);
-      const letter = row.split(' ')[1].replace(':', '');
-      const password = row.split(': ')[1];
+      const parts = row.split(/: | |-/);
+      const i = parseInt(parts[0]);
+      const j = parseInt(parts[1]);
+      const letter = parts[2];
+      const password = parts[3];
 
       // p1
       const n = (password.match(new RegExp(letter, 'g')) || []).length;

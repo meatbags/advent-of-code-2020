@@ -5,6 +5,10 @@
   padding: 16px;
   width: 100%;
 
+  .title {
+    font-size: 30px;
+  }
+
   .row {
     width: 100%;
 
@@ -17,8 +21,6 @@
     canvas {
       border: 1px solid grey;
       background: black;
-      width: 400px;
-      height: 200px;
     }
 
     textarea {
@@ -30,19 +32,22 @@
       color: grey;
       outline: 1px solid grey;
     }
+  }
+
+  .controls {
+    padding-top: 8px;
 
     button {
-      padding: 8px;
+      padding: 8px 10px;
       border: 1px solid grey;
       user-select: none;
       border: none;
       border-radius: 0;
       outline: none;
       cursor: pointer;
+      font-size: 16px;
+      font-family: monospace;
+      text-transform: uppercase;
     }
-  }
-
-  .controls {
-    padding-top: 8px;
   }
 }
