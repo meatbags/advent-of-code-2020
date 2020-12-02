@@ -11,42 +11,9 @@ class App {
     };
     this.el.run.onclick = () => {
       const t = performance.now();
-      this.day1_HASH();
+      this.day1();
       this.el.time.value = `${performance.now() - t} ms`;
     };
-  }
-
-  day1_HASH() {
-    const data = this.el.input.value.trim().split('\n').map(e => parseInt(e));
-    const iLim = data.length-1;
-    const jLim = data.length;
-    const len = data.length;
-    let p1 = null;
-    let p2 = null;
-    let iter = 0;
-    const map1 = {};
-    const map2 = {};
-
-    for (let i=0; i<len; i++) {
-      iter++;
-      const v = data[i];
-      const d = 2020 - v;
-
-      if (d < 0)
-        continue;
-
-      if (map1[v]) {
-        p1 = map1[v].val * v;
-
-        console.log(v, map1[v], p1);
-      } else {
-        map1[d] = {
-          val: v,
-        };
-      }
-    }
-
-    console.log('Iterations: ' + iter);
   }
 
   day1() {
