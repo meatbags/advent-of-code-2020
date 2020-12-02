@@ -1,0 +1,31 @@
+::-webkit-scrollbar {
+  width: $space;
+  height: $space;
+  background: transparent;
+}
+
+::-webkit-scrollbar-button {
+  background: transparent;
+  width: 0;
+  height: 0;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-track-piece {}
+
+::-webkit-scrollbar-thumb {
+  background: grey;
+}
+
+::-webkit-scrollbar-corner {
+  width: 0;
+  height: 0;
+}
+
+::-webkit-resizer {
+  width: 0;
+  height: 0;
+}
