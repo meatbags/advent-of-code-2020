@@ -27,6 +27,19 @@ body {
   text-transform: uppercase;
 }
 
+.row__output {
+  width: 100%;
+  display: flex;
+}
+
+canvas {
+  margin-left: 8px;
+  outline: 1px solid grey;
+  background: grey;
+  width: 400px;
+  height: 200px;
+}
+
 .controls {
   padding-top: 8px;
 }

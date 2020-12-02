@@ -9,11 +9,59 @@ class App {
       output: document.querySelector('#output'),
       time: document.querySelector('#time'),
     };
+
+    // dom events
     this.el.run.onclick = () => {
       const t = performance.now();
-      this.day1();
+      this.day2();
       this.el.time.value = `${performance.now() - t} ms`;
     };
+
+    // canvas init
+    this.cvs = document.querySelector('#canvas');
+    this.ctx = this.cvs.getContext('2d');
+    this.cvs.width = 400;
+    this.cvs.height = 200;
+  }
+
+  day2() {
+    let p1 = 0;
+    let p2 = 0;
+    const res = this.el.input.value.trim().split('\n').forEach(row => {
+      const p = e.split()
+      const n = (e.password.match(new RegExp(e.letter, 'g')) || []).length;
+      p1 +=
+      p2 += ;
+    });
+
+    const data = this.el.input.value.trim().split('\n').map(e => {
+      const split = e.split(' ');
+      const min = parseInt(split[0].split('-')[0]);
+      const max = parseInt(split[0].split('-')[1]);
+      const letter = split[1].split(':')[0];
+      const pword = split[2];
+      return {
+        min: min,
+        max: max,
+        letter: letter,
+        password: pword,
+      };
+    })
+
+    let correct= 0;
+    data.forEach(e => {
+      const i = e.password[e.min-1] == e.letter;
+      const j = e.password[e.max-1] == e.letter;
+      e.res = i ^ j;
+      //const n = (e.password.match(new RegExp(e.letter, 'g')) || []).length;
+      //e.res = n >= e.min && n <= e.max;
+      if (e.res) {
+        correct += 1;
+      }
+    });
+
+    console.log(data);
+    console.log(correct);
   }
 
   day1() {
