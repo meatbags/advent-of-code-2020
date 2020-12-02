@@ -46,7 +46,7 @@ class App {
         letter: letter,
         password: pword,
       };
-    })
+    });
 
     let correct= 0;
     data.forEach(e => {
