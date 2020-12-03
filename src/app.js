@@ -1,5 +1,6 @@
 /** AOC */
 
+import RayTracer from './ray_tracer';
 import Day1 from './day_1';
 import Day2 from './day_2';
 
@@ -10,6 +11,10 @@ class App {
     this.el.input = document.querySelector('#input');
     this.el.output = document.querySelector('#output');
     this.el.time = document.querySelector('#time');
+    this.el.canvas = document.querySelector('#canvas');
+
+    const rayTracer = new RayTracer();
+    rayTracer.run(this.el.canvas);
 
     // settings
     this.url = 'data/2.txt';
@@ -21,8 +26,7 @@ class App {
     };
 
     // run
-    this.run();
-    this.smiley();
+    // this.run();
   }
 
   run() {
@@ -34,24 +38,6 @@ class App {
         this.el.output.value = this.module.solve(text);
         this.el.time.value = `${performance.now() - t} ms`;
       });
-  }
-
-  smiley() {
-    const cvs = document.querySelector('#canvas');
-    const ctx = cvs.getContext('2d');
-    cvs.width = 200;
-    cvs.height = 200;
-    ctx.strokeStyle = '#fff';
-    ctx.beginPath();
-    ctx.arc(100, 100, 50, 0, Math.PI, false);
-    ctx.moveTo(80, 75);
-    ctx.arc(75, 75, 5, 0, Math.PI*2, false);
-    ctx.moveTo(130, 75);
-    ctx.arc(125, 75, 5, 0, Math.PI*2, false);
-    ctx.moveTo(100, 100);
-    ctx.lineTo(110, 105)
-    ctx.lineTo(100, 110);
-    ctx.stroke();
   }
 }
 
