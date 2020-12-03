@@ -1,8 +1,8 @@
 /** AOC */
 
-import RayTracer from './ray_tracer';
 import Day1 from './day_1';
 import Day2 from './day_2';
+import Day3 from './day_3';
 
 class App {
   constructor() {
@@ -13,12 +13,9 @@ class App {
     this.el.time = document.querySelector('#time');
     this.el.canvas = document.querySelector('#canvas');
 
-    const rayTracer = new RayTracer();
-    rayTracer.run(this.el.canvas);
-
     // settings
-    this.url = 'data/2.txt';
-    this.module = new Day2();
+    this.url = 'data/3.txt';
+    this.module = new Day3();
 
     // event
     this.el.run.onclick = () => {
@@ -26,7 +23,7 @@ class App {
     };
 
     // run
-    // this.run();
+    this.run();
   }
 
   run() {
