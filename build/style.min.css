@@ -70,3 +70,48 @@ body {
   width: 0;
   height: 0; }
 
+.window {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  z-index: 999;
+  background: black;
+  border: 2px outset #eee;
+  user-select: none;
+  display: none; }
+  .window .window__header {
+    padding-left: 6px;
+    padding-right: 6px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    display: flex;
+    position: relative;
+    cursor: grab; }
+    .window .window__header .window__close {
+      position: absolute;
+      right: 0;
+      top: 0;
+      height: 100%;
+      width: 24px;
+      cursor: pointer; }
+      .window .window__header .window__close div {
+        position: absolute;
+        width: 8px;
+        height: 2px;
+        top: 50%;
+        left: 50%;
+        background: white; }
+        .window .window__header .window__close div:nth-child(1) {
+          transform: translate(-50%, -50%) rotate(45deg); }
+        .window .window__header .window__close div:nth-child(2) {
+          transform: translate(-50%, -50%) rotate(-45deg); }
+  .window .window__body {
+    display: flex; }
+  .window.dragging {
+    cursor: grabbing; }
+    .window.dragging .window__header {
+      cursor: grabbing; }
+

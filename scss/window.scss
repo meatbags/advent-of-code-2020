@@ -1,0 +1,56 @@
+.window {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  z-index: 999;
+  background: black;
+  border: 2px outset #eee;
+  user-select: none;
+
+  display: none;
+
+  .window__header {
+    @include padding(0.75, 0.5);
+    display: flex;
+    position: relative;
+    cursor: grab;
+
+    .window__label {}
+
+    .window__close {
+      position: absolute;
+      right: 0;
+      top: 0;
+      height: 100%;
+      width: 24px;
+      //background: grey;
+      cursor: pointer;
+
+      div {
+        position: absolute;
+        width: 8px;
+        height: 2px;
+        top: 50%;
+        left: 50%;
+        background: white;
+        &:nth-child(1) { transform: translate(-50%,-50%) rotate(45deg); }
+        &:nth-child(2) { transform: translate(-50%,-50%) rotate(-45deg); }
+      }
+    }
+  }
+
+  .window__body {
+    display: flex;
+  }
+
+  &.dragging {
+    cursor: grabbing;
+
+    .window__header {
+      cursor: grabbing;
+    }
+  }
+}

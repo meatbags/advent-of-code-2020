@@ -3,6 +3,8 @@
 import Day1 from './day_1';
 import Day2 from './day_2';
 import Day3 from './day_3';
+import Day4 from './day_4';
+// import Renderer from './renderer';
 
 class App {
   constructor() {
@@ -13,17 +15,62 @@ class App {
     this.el.time = document.querySelector('#time');
     this.el.canvas = document.querySelector('#canvas');
 
+    // this.renderer = new Renderer();
+
     // settings
-    this.url = 'data/3.txt';
-    this.module = new Day3();
+    this.url = 'data/4.txt';
+    this.module = new Day4();
 
     // event
     this.el.run.onclick = () => {
       this.run();
     };
 
+    // this.initWindows();
     // run
     this.run();
+  }
+
+  initWindows() {
+    this.mouse = {x: 0, y: 0};
+    this.windows = [];
+
+    // init windows
+    document.querySelectorAll('.window').forEach(el => {
+      const win = {el: el};
+      this.windows.push(win);
+      el.querySelector('.window__header').onmousedown = evt => {
+        const rect = el.getBoundingClientRect();
+        win.x = rect.left + rect.width / 2;
+        win.y = rect.top + rect.height / 2;
+        this.mouse.x = evt.clientX;
+        this.mouse.y = evt.clientY;
+        win.active = true;
+        win.el.classList.add('dragging');
+      };
+    });
+
+    // drag windows
+    window.addEventListener('mousemove', evt => {
+      this.windows.forEach(win => {
+        if (win.active) {
+          const dx = evt.clientX - this.mouse.x;
+          const dy = evt.clientY - this.mouse.y;
+          win.el.style.left = `${win.x + dx}px`;
+          win.el.style.top = `${win.y + dy}px`;
+        }
+      });
+    });
+
+    // mouse up
+    const onmouseup = evt => {
+      this.windows.forEach(win => {
+        win.active = false;
+        win.el.classList.remove('dragging');
+      });
+    };
+    window.addEventListener('mouseup', onmouseup);
+    window.addEventListener('mouseleave', onmouseup);
   }
 
   run() {
