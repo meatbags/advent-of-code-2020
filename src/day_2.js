@@ -12,7 +12,7 @@ class Day2 {
       const j = parseInt(parts[1]);
       const letter = parts[2];
       const password = parts[3];
-
+      
       // p1
       const n = (password.match(new RegExp(letter, 'g')) || []).length;
       if (n >= i && n <= j) {
@@ -26,7 +26,7 @@ class Day2 {
     });
 
     console.log(p1, p2);
-    return 'p1: ' + p1 + '\n' + 'p2: ' + p2;
+    return [p1, p2];
   }
 }
 

@@ -1,8 +1,6 @@
 /* Day 3 */
 
 class Day3 {
-  constructor() {}
-
   solve(text) {
     const data = text.trim().split('\n');
 
@@ -27,12 +25,11 @@ class Day3 {
       }
     });
 
-    console.log(t3)
-    console.log(t1, t3, t5, t7, t12);
+    const p1 = t3;
     const p2 = t1 * t3 * t5 * t7 * t12;
-    console.log(p2);
+    console.log(p2, p2);
 
-    return 'p1: ' + t3 + '\np2: ' + p2;
+    return [p1, p2];
   }
 }
 

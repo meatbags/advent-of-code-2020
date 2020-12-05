@@ -1,9 +1,9 @@
 /** Ray Tracer */
 
-import Vector from './util/vector';
-import Plane from './util/plane';
-import Ray from './util/ray';
-import Clamp from './util/clamp';
+import Vector from './vector';
+import Plane from './plane';
+import Ray from './ray';
+import Clamp from './clamp';
 
 class RayTracer {
   constructor() {

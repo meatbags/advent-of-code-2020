@@ -4,7 +4,8 @@ import Day1 from './day_1';
 import Day2 from './day_2';
 import Day3 from './day_3';
 import Day4 from './day_4';
-// import Renderer from './renderer';
+import Day5 from './day_5';
+// import Renderer from './util/renderer';
 
 class App {
   constructor() {
@@ -18,8 +19,8 @@ class App {
     // this.renderer = new Renderer();
 
     // settings
-    this.url = 'data/4.txt';
-    this.module = new Day4();
+    this.url = 'data/5.txt';
+    this.module = new Day5();
 
     // event
     this.el.run.onclick = () => {
@@ -27,8 +28,18 @@ class App {
     };
 
     // this.initWindows();
-    // run
     this.run();
+  }
+
+  run() {
+    fetch(this.url)
+      .then(res => res.text())
+      .then(text => {
+        const t = performance.now();
+        this.el.input.value = text;
+        this.el.output.value = this.module.solve(text);
+        this.el.time.value = `${performance.now() - t} ms`;
+      });
   }
 
   initWindows() {
@@ -71,17 +82,6 @@ class App {
     };
     window.addEventListener('mouseup', onmouseup);
     window.addEventListener('mouseleave', onmouseup);
-  }
-
-  run() {
-    fetch(this.url)
-      .then(res => res.text())
-      .then(text => {
-        const t = performance.now();
-        this.el.input.value = text;
-        this.el.output.value = this.module.solve(text);
-        this.el.time.value = `${performance.now() - t} ms`;
-      });
   }
 }
 

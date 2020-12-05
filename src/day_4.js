@@ -1,8 +1,6 @@
 /* Day 4 */
 
 class Day4 {
-  constructor() {}
-
   solve(text) {
     const passports = text.split('\r\n\r\n');
     const required = ['byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid'];
@@ -32,7 +30,7 @@ class Day4 {
     ).length;
     console.log(p2);
 
-    return `p1: ${p1}\np2: ${p2}`
+    return [p1, p2];
   }
 }
 

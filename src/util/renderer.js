@@ -1,7 +1,7 @@
 /** Renderer */
 
 import * as THREE from 'three';
-import Keyboard from './util/keyboard';
+import Keyboard from './keyboard';
 
 class Renderer {
   constructor() {
