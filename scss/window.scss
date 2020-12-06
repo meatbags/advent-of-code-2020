@@ -10,8 +10,6 @@
   border: 2px outset #eee;
   user-select: none;
 
-  display: none;
-
   .window__header {
     @include padding(0.75, 0.5);
     display: flex;

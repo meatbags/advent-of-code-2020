@@ -5,6 +5,7 @@ import Day2 from './day_2';
 import Day3 from './day_3';
 import Day4 from './day_4';
 import Day5 from './day_5';
+import Day6 from './day_6';
 // import Renderer from './util/renderer';
 
 class App {
@@ -19,15 +20,14 @@ class App {
     // this.renderer = new Renderer();
 
     // settings
-    this.url = 'data/5.txt';
-    this.module = new Day5();
+    this.url = 'data/6.txt';
+    this.module = new Day6();
 
     // event
     this.el.run.onclick = () => {
       this.run();
     };
 
-    // this.initWindows();
     this.run();
   }
 

@@ -80,8 +80,7 @@ body {
   z-index: 999;
   background: black;
   border: 2px outset #eee;
-  user-select: none;
-  display: none; }
+  user-select: none; }
   .window .window__header {
     padding-left: 6px;
     padding-right: 6px;
