@@ -6,6 +6,7 @@ import Day3 from './day_3';
 import Day4 from './day_4';
 import Day5 from './day_5';
 import Day6 from './day_6';
+import Day7 from './day_7';
 // import Renderer from './util/renderer';
 
 class App {
@@ -20,15 +21,13 @@ class App {
     // this.renderer = new Renderer();
 
     // settings
-    this.url = 'data/6.txt';
-    this.module = new Day6();
-
-    // event
-    this.el.run.onclick = () => {
-      this.run();
-    };
-
+    this.url = 'data/7.txt';
+    this.module = new Day7();
     this.run();
+
+    // this.el.run.onclick = () => {
+    //   this.run();
+    // };
   }
 
   run() {
