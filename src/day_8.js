@@ -13,6 +13,7 @@ class Day8 {
       n: parseInt(line.split(' ')[1].replace('+', ''))
     }));
 
+    /*
     // part 1
     let acc = 0;
     let i = 0;
@@ -36,6 +37,7 @@ class Day8 {
       visited.push(i);
     }
     console.log('p1 =', acc);
+    */
 
     // part 2
     const save = [];
@@ -45,16 +47,12 @@ class Day8 {
     visited = [];
 
     while (i < map.length) {
-      // check reset required
       if (visited.includes(i)) {
         // revert last state (failed)
-        if (state) {
-          map[state.i].cmd = map[state.i].cmd == 'nop' ? 'jmp' : 'nop';
-          save.splice(0, 1);
-        }
+        map[state.i].cmd = map[state.i].cmd == 'nop' ? 'jmp' : 'nop';
 
         // get save state
-        state = save[0];
+        state = save.splice(0, 1)[0];
         map[state.i].cmd = map[state.i].cmd == 'nop' ? 'jmp' : 'nop';
         map[state.i].flag = 1;
 
@@ -66,22 +64,54 @@ class Day8 {
         visited.push(i);
       }
 
-      // ignore acc
       if (map[i].cmd == 'acc') {
         acc += map[i].n;
-        i += 1;
-      } else {
-        // save state
-        if (!map[i].flag) {
-          save.push({ acc: acc, i: i, visited: visited.length });
-        }
-
-        // increment
-        i += map[i].cmd == 'jmp' ? map[i].n : 1;
+      } else if (!map[i].flag) {
+        save.push({ acc: acc, i: i, visited: visited.length });
       }
+      i += map[i].cmd == 'jmp' ? map[i].n : 1;
     }
 
     console.log('p2 =', acc);
+  }
+
+  gold(text) {
+    // input
+    let cmd = [];
+    let n = [];
+    let rows = text.trim().split('\r\n').forEach(v => {
+      cmd.push(v.split(' ')[0]);
+      n.push(parseInt(v.split(' ')[1]));
+    })
+
+    // vars
+    let i = 0;
+    let acc = 0;
+    let state = null;
+    let visited = new Set();
+
+    let ops = 0;
+    let max = 1000000;
+
+    while (i < rows.length && ops++ < max) {
+      if (visited.has(i)) {
+        acc = state.acc;
+        i = state.i;
+
+      }
+      visited.add(i);
+      if (cmd[i] == 'acc') {
+        acc += n[i];
+      } else {
+        state = { acc: acc, i: i};
+        i += cmd[i] == 'jmp' ? n[i] : 1;
+      }
+    }
+
+    if (ops >= max) {
+      console.log('LIMITED');
+    }
+    console.log(acc);
   }
 }
 
