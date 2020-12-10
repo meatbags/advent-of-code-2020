@@ -2,8 +2,8 @@ div, * {
   box-sizing: border-box; }
 
 body {
-  background: black;
-  color: white;
+  background: #444;
+  color: #aaa;
   font-family: monospace;
   margin: 0; }
 
@@ -23,13 +23,13 @@ body {
       text-transform: uppercase; }
     .wrapper .row canvas {
       border: 1px solid grey;
-      background: black; }
+      background: #444; }
     .wrapper .row textarea {
       width: 100%;
       border-radius: 0;
       border: none;
       outline: none;
-      background: black;
+      background: #2b2b2b;
       color: grey;
       outline: 1px solid grey; }
   .wrapper .controls {
@@ -78,9 +78,11 @@ body {
   display: flex;
   flex-direction: column;
   z-index: 999;
-  background: black;
+  background: #2b2b2b;
   border: 2px outset #eee;
-  user-select: none; }
+  user-select: none;
+  min-width: 300px;
+  box-shadow: 8px 8px 8px rgba(0, 0, 0, 0.125); }
   .window .window__header {
     padding-left: 6px;
     padding-right: 6px;
@@ -102,13 +104,15 @@ body {
         height: 2px;
         top: 50%;
         left: 50%;
-        background: white; }
+        background: #aaa; }
         .window .window__header .window__close div:nth-child(1) {
           transform: translate(-50%, -50%) rotate(45deg); }
         .window .window__header .window__close div:nth-child(2) {
           transform: translate(-50%, -50%) rotate(-45deg); }
   .window .window__body {
-    display: flex; }
+    display: flex;
+    min-height: 150px;
+    background: #444; }
   .window.dragging {
     cursor: grabbing; }
     .window.dragging .window__header {
