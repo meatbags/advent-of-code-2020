@@ -24,7 +24,7 @@ class App {
     this.initWindows();
 
     // settings
-    this.url = 'data/10sample.txt';
+    this.url = 'data/10.txt';
     this.module = new Day10();
     this.run();
 

@@ -34,6 +34,29 @@ class Day10 {
     let acc = 1;
     let diff = [1];
 
+    const getPaths = i => {
+      if (i == l.length - 1) {
+        return 1;
+      } else {
+        let acc = 0;
+        let conn = [];
+        let j = i + 1;
+        while (j < l.length) {
+          if (l[j] - l[i] > 3)
+            break;
+          conn.push(j);
+          j++;
+        }
+        conn.forEach(j => {
+          acc += getPaths(j);
+        });
+        return acc;
+      }
+    };
+
+    console.log(getPaths(0));
+
+    /*
     for (let i=0; i<l.length-1; i++) {
       let conn = 0;
       let li = l[i];
@@ -60,6 +83,7 @@ class Day10 {
     console.log(arr);
 
     console.log(acc);
+    */
   }
 }
 
