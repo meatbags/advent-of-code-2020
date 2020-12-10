@@ -6,9 +6,11 @@
   display: flex;
   flex-direction: column;
   z-index: 999;
-  background: black;
+  background: darken($black, 10%);
   border: 2px outset #eee;
   user-select: none;
+  min-width: 300px;
+  box-shadow: 8px 8px 8px rgba(black, 0.125);
 
   .window__header {
     @include padding(0.75, 0.5);
@@ -24,7 +26,6 @@
       top: 0;
       height: 100%;
       width: 24px;
-      //background: grey;
       cursor: pointer;
 
       div {
@@ -33,7 +34,7 @@
         height: 2px;
         top: 50%;
         left: 50%;
-        background: white;
+        background: $white;
         &:nth-child(1) { transform: translate(-50%,-50%) rotate(45deg); }
         &:nth-child(2) { transform: translate(-50%,-50%) rotate(-45deg); }
       }
@@ -42,6 +43,8 @@
 
   .window__body {
     display: flex;
+    min-height: 150px;
+    background: $black;
   }
 
   &.dragging {

@@ -9,6 +9,7 @@ import Day6 from './day_6';
 import Day7 from './day_7';
 import Day8 from './day_8';
 import Day9 from './day_9';
+import Day10 from './day_10';
 // import Renderer from './util/renderer';
 
 class App {
@@ -20,10 +21,11 @@ class App {
     this.el.time = document.querySelector('#time');
     this.el.canvas = document.querySelector('#canvas');
 
+    this.initWindows();
+
     // settings
-    this.url = 'data/9.txt';
-    //this.url = 'data/8.txt';
-    this.module = new Day9();
+    this.url = 'data/10sample.txt';
+    this.module = new Day10();
     this.run();
 
     // this.renderer = new Renderer();

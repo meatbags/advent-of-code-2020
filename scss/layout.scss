@@ -20,7 +20,7 @@
 
     canvas {
       border: 1px solid grey;
-      background: black;
+      background: $black;
     }
 
     textarea {
@@ -28,7 +28,7 @@
       border-radius: 0;
       border: none;
       outline: none;
-      background: black;
+      background: darken($black, 10%);
       color: grey;
       outline: 1px solid grey;
     }
