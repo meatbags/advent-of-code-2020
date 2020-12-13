@@ -1,15 +1,6 @@
 /** AOC */
 
-import Day1 from './day_1';
-import Day2 from './day_2';
-import Day3 from './day_3';
-import Day4 from './day_4';
-import Day5 from './day_5';
-import Day6 from './day_6';
-import Day7 from './day_7';
-import Day8 from './day_8';
-import Day9 from './day_9';
-import Day10 from './day_10';
+import Day13 from './day_13';
 // import Renderer from './util/renderer';
 
 class App {
@@ -24,24 +15,37 @@ class App {
     this.initWindows();
 
     // settings
-    this.url = 'data/10.txt';
-    this.module = new Day10();
+    this.url = {
+      sample: 'data/sample.txt',
+      main: 'data/13.txt',
+    };
+    this.module = new Day13();
     this.run();
-
-    // this.renderer = new Renderer();
-    // this.el.run.onclick = () => {
-    //   this.run();
-    // };
   }
 
   run() {
-    fetch(this.url)
-      .then(res => res.text())
-      .then(text => {
+    let toLoad = 2;
+    let text = null;
+    let sample = null;
+    const callback = () => {
+      if (--toLoad == 0) {
         const t = performance.now();
         this.el.input.value = text;
-        this.el.output.value = this.module.solve(text);
+        this.el.output.value = this.module.solve(text, sample);
         this.el.time.value = `${performance.now() - t} ms`;
+      }
+    };
+    fetch(this.url.sample)
+      .then(res => res.text())
+      .then(txt => {
+        sample = txt;
+        callback();
+      });
+    fetch(this.url.main)
+      .then(res => res.text())
+      .then(txt => {
+        text = txt;
+        callback();
       });
   }
 
