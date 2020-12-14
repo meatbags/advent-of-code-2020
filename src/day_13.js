@@ -3,6 +3,39 @@
 class Day13 {
   constructor() {}
 
+  bigboi() {
+    fetch('data/bigboi_13.txt')
+      .then(res => res.text())
+      .then(text => {
+        this.solveBigBoi(text);
+      });
+  }
+
+  solveBigBoi(text) {
+    let now = performance.now();
+    let data = text.trim().split('\r\n');
+    let buses = data[1].split(',').map((id, i) => {
+      return id !== 'x' ? {
+        id: BigInt(parseInt(id)),
+        i: BigInt(i)
+      } : null;
+    }).filter( obj => obj !== null );
+
+    console.log(buses);
+    let n = buses[0].id;
+    let step = buses[0].id;
+
+    for (let i=0; i<buses.length; i++) {
+      const bus = buses[i];
+      while ((n + bus.i) % bus.id != 0)
+        n += step;
+      step *= bus.id;
+    }
+
+    console.log(n);
+    console.log(performance.now() - now + 'ms');
+  }
+
   solve(text, sample) {
     let data = text.trim().split('\r\n');
 
@@ -38,13 +71,9 @@ class Day13 {
     for (let i=0; i<buses.length; i++) {
       let id = buses[i].id;
       let index = buses[i].i;
-
-      // find time which satisfies: time + i % id == 0
       while ((n + index) % id !== 0) {
         n += step;
       }
-
-      // multiply step by id
       step *= id;
     }
 
