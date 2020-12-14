@@ -1,94 +1,87 @@
-/** AOC */
-
-import Day13 from './day_13';
-// import Renderer from './util/renderer';
-
 class App {
   constructor() {
-    this.el = {};
-    this.el.run = document.querySelector('#button-run');
-    this.el.input = document.querySelector('#input');
-    this.el.output = document.querySelector('#output');
-    this.el.time = document.querySelector('#time');
-    this.el.canvas = document.querySelector('#canvas');
-
-    this.initWindows();
-
-    // settings
-    this.url = {
-      sample: 'data/sample.txt',
-      main: 'data/13.txt',
-    };
-    this.module = new Day13();
-    this.run();
+    fetch('data/14.txt')
+      .then(res => res.text())
+      .then(text => {
+        this.text = text;
+        fetch('data/sample.txt')
+          .then(res => res.text())
+          .then(text => {
+            this.sample = text;
+            this.solve(this.sample, this.text);
+          })
+      });
   }
 
-  run() {
-    let toLoad = 2;
-    let text = null;
-    let sample = null;
-    const callback = () => {
-      if (--toLoad == 0) {
-        const t = performance.now();
-        this.el.input.value = text;
-        this.el.output.value = this.module.solve(text, sample);
-        this.el.time.value = `${performance.now() - t} ms`;
+  solve(sample, text) {
+    let d = text.trim().split('\n').map(row => {
+      let cmd = row.split(" = ")[0];
+      let addr = cmd !== "mask" ? BigInt(parseInt(row.split("[")[1].split("]")[0])) : null;
+      let val = row.split(" = ")[1];
+      return { cmd, addr, val: cmd == "mask" ? val : BigInt(parseInt(val)) };
+    });
+
+    // PART 1
+    let mem = {};
+    let maskOR = 0;
+    let maskAND = 0;
+
+    d.forEach(row => {
+      if (row.cmd == 'mask') {
+        maskOR = BigInt(parseInt(row.val.replace(/[X0]/g, '0'), 2));
+        maskAND = BigInt(parseInt(row.val.replace(/[X1]/g, '1'), 2));
+      } else {
+        let val = row.val;
+        val = val | maskOR;
+        val = val & maskAND;
+        mem[row.addr] = val;
       }
-    };
-    fetch(this.url.sample)
-      .then(res => res.text())
-      .then(txt => {
-        sample = txt;
-        callback();
-      });
-    fetch(this.url.main)
-      .then(res => res.text())
-      .then(txt => {
-        text = txt;
-        callback();
-      });
-  }
-
-  initWindows() {
-    this.mouse = {x: 0, y: 0};
-    this.windows = [];
-
-    // init windows
-    document.querySelectorAll('.window').forEach(el => {
-      const win = {el: el};
-      this.windows.push(win);
-      el.querySelector('.window__header').onmousedown = evt => {
-        const rect = el.getBoundingClientRect();
-        win.x = rect.left + rect.width / 2;
-        win.y = rect.top + rect.height / 2;
-        this.mouse.x = evt.clientX;
-        this.mouse.y = evt.clientY;
-        win.active = true;
-        win.el.classList.add('dragging');
-      };
     });
 
-    // drag windows
-    window.addEventListener('mousemove', evt => {
-      this.windows.forEach(win => {
-        if (win.active) {
-          const dx = evt.clientX - this.mouse.x;
-          const dy = evt.clientY - this.mouse.y;
-          win.el.style.left = `${win.x + dx}px`;
-          win.el.style.top = `${win.y + dy}px`;
+    let res = BigInt(0);
+    Object.keys(mem).forEach(key => { res += mem[key]; });
+    console.log(res);
+
+    // PART 2
+    mem = {};
+    maskOR = 0;
+    maskAND = 0;
+    let addresses = [];
+
+    d.forEach(row => {
+      // get mask
+      if (row.cmd == 'mask') {
+        maskOR = BigInt(parseInt(row.val.replace(/[X0]/g, '0'), 2));
+        maskAND = BigInt(parseInt(row.val.replace(/[10]/g, '1').replace(/X/g, '0'), 2));
+
+        // get limits
+        const max = parseInt(row.val.replace(/[10]/g, '').replace(/X/g, '1'), 2);
+        const indices = row.val.split('').map((e, i) => {
+          return e == 'X' ? 35 - i : null;
+        }).filter(e => e !== null);
+
+        // calculate addresses
+        addresses = [];
+        for (let i=0; i<=max; i++) {
+          let j = i;
+          let addr = BigInt(0);
+          indices.forEach(index => {
+            if (j & 1)
+              addr += BigInt(Math.pow(2, index));
+            j >>= 1
+          });
+          addresses.push(addr);
         }
-      });
+
+      } else {
+        let addr = row.addr | maskOR & maskAND;
+        addresses.forEach(a => { mem[addr + a] = row.val; });
+      }
     });
 
-    // mouse up
-    const onmouseup = evt => {
-      this.windows.forEach(win => {
-        win.active = false;
-        win.el.classList.remove('dragging');
-      });
-    };
-    window.addEventListener('mouseup', onmouseup);
-    window.addEventListener('mouseleave', onmouseup);
+    res = BigInt(0);
+    Object.keys(mem).forEach(key => { res += mem[key]; });
+    console.log(res);
   }
 }
 
