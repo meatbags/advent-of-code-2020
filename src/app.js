@@ -15,41 +15,32 @@ class App {
 
   solve(sample, text) {
     let data = text.trim().split(',').map(n => parseInt(n));
-
-    // part 1
-    this.compute(data, 2020);
-
-    // part 2
-    this.compute(data, 30000000);
+    let now = performance.now();
+    let p1 = this.compute(data, 2020);
+    let t1 = performance.now() - now;
+    let p2 = this.compute(data, 30000000);
+    let t2 = performance.now() - now - t1;
+    console.log(p1, t1);
+    console.log(p2, t2);
   }
 
-  compute(n, lim) {
-    let map1 = new Array(lim);
-    let map2 = new Array(lim);
-    let prev = n[n.length - 1];
-    let next = null;
-
-    // set maps
-    const speak = (num, i) => {
-      if (map1[num] === undefined) {
-        map1[num] = i;
-      } else {
-        map2[num] = map1[num];
-        map1[num] = i;
-      }
-    };
-
+  compute(numbers, lim) {
     // map starting numbers
-    n.forEach((n, i) => { speak(n, i); });
+    let map = new Array(lim);
+    numbers.forEach((n, i) => { map[n] = i+1; });
 
-    // iterate
-    for (let i=n.length; i<lim; i++) {
-      next = map2[prev] === undefined ? 0 : map1[prev] - map2[prev];
-      speak(next, i);
-      prev = next;
+    // set index
+    let res = numbers[numbers.length - 1];
+    let i = numbers.length;
+
+    while (i < lim) {
+      let tmp = map[res];
+      map[res] = i;
+      res = tmp ? i - tmp : 0;
+      i++;
     }
 
-    console.log(next);
+    return res;
   }
 }
 
