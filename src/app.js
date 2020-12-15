@@ -1,6 +1,6 @@
 class App {
   constructor() {
-    fetch('data/14.txt')
+    fetch('data/15.txt')
       .then(res => res.text())
       .then(text => {
         this.text = text;
@@ -14,74 +14,42 @@ class App {
   }
 
   solve(sample, text) {
-    let d = text.trim().split('\n').map(row => {
-      let cmd = row.split(" = ")[0];
-      let addr = cmd !== "mask" ? BigInt(parseInt(row.split("[")[1].split("]")[0])) : null;
-      let val = row.split(" = ")[1];
-      return { cmd, addr, val: cmd == "mask" ? val : BigInt(parseInt(val)) };
-    });
+    let data = text.trim().split(',').map(n => parseInt(n));
 
-    // PART 1
-    let mem = {};
-    let maskOR = 0;
-    let maskAND = 0;
+    // part 1
+    this.compute(data, 2020);
 
-    d.forEach(row => {
-      if (row.cmd == 'mask') {
-        maskOR = BigInt(parseInt(row.val.replace(/[X0]/g, '0'), 2));
-        maskAND = BigInt(parseInt(row.val.replace(/[X1]/g, '1'), 2));
+    // part 2
+    this.compute(data, 30000000);
+  }
+
+  compute(n, lim) {
+    let map1 = new Array(lim);
+    let map2 = new Array(lim);
+    let prev = n[n.length - 1];
+    let next = null;
+
+    // set maps
+    const speak = (num, i) => {
+      if (map1[num] === undefined) {
+        map1[num] = i;
       } else {
-        let val = row.val;
-        val = val | maskOR;
-        val = val & maskAND;
-        mem[row.addr] = val;
+        map2[num] = map1[num];
+        map1[num] = i;
       }
-    });
+    };
 
-    let res = BigInt(0);
-    Object.keys(mem).forEach(key => { res += mem[key]; });
-    console.log(res);
+    // map starting numbers
+    n.forEach((n, i) => { speak(n, i); });
 
-    // PART 2
-    mem = {};
-    maskOR = 0;
-    maskAND = 0;
-    let addresses = [];
+    // iterate
+    for (let i=n.length; i<lim; i++) {
+      next = map2[prev] === undefined ? 0 : map1[prev] - map2[prev];
+      speak(next, i);
+      prev = next;
+    }
 
-    d.forEach(row => {
-      // get mask
-      if (row.cmd == 'mask') {
-        maskOR = BigInt(parseInt(row.val.replace(/[X0]/g, '0'), 2));
-        maskAND = BigInt(parseInt(row.val.replace(/[10]/g, '1').replace(/X/g, '0'), 2));
-
-        // get limits
-        const max = parseInt(row.val.replace(/[10]/g, '').replace(/X/g, '1'), 2);
-        const indices = row.val.split('').map((e, i) => {
-          return e == 'X' ? 35 - i : null;
-        }).filter(e => e !== null);
-
-        // calculate addresses
-        addresses = [];
-        for (let i=0; i<=max; i++) {
-          let j = i;
-          let addr = BigInt(0);
-          indices.forEach(index => {
-            if (j & 1)
-              addr += BigInt(Math.pow(2, index));
-            j >>= 1
-          });
-          addresses.push(addr);
-        }
-
-      } else {
-        let addr = row.addr | maskOR & maskAND;
-        addresses.forEach(a => { mem[addr + a] = row.val; });
-      }
-    });
-
-    res = BigInt(0);
-    Object.keys(mem).forEach(key => { res += mem[key]; });
-    console.log(res);
+    console.log(next);
   }
 }
 
