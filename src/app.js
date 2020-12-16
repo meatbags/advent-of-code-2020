@@ -1,4 +1,4 @@
-import * as Util from './util/aoc_utils';
+import { splitNewline, splitDoubleNewline, splitComma } from './util/aoc_utils';
 
 class App {
   constructor() {
@@ -17,40 +17,36 @@ class App {
   }
 
   solve(text) {
-    let data = Util.splitDoubleNewline(text);
+    let data = splitDoubleNewline(text);
 
     // parse
-    let rules = Util.splitNewline(data[0]);
+    let rules = splitNewline(data[0]);
     rules = rules.map(rule => {
-      let a = rule.split(': ')[1].split(' or ')[0];
-      let b = rule.split(': ')[1].split(' or ')[1];
+      rule = rule.split(': ');
+      let parts = rule[1].replace(/( or)|[a-z:]|(  )/g, '').split(/[ -]/);
       return {
-        field: rule.split(':')[0],
-        a: {min: parseInt(a.split('-')[0]), max: parseInt(a.split('-')[1])},
-        b: {min: parseInt(b.split('-')[0]), max: parseInt(b.split('-')[1])}
+        field: rule[0],
+        a0: parseInt(parts[0]),
+        a1: parseInt(parts[1]),
+        b0: parseInt(parts[2]),
+        b1: parseInt(parts[3]),
       };
     });
-    let ticket = Util.splitNewline(data[1]);
-    ticket = ticket.slice(1, ticket.length).map(row => Util.splitComma(row))[0];
-    let nearby = Util.splitNewline(data[2]);
-    nearby = nearby.slice(1, nearby.length).map(row => Util.splitComma(row));
+    let ticket = splitNewline(data[1]);
+    ticket = ticket.slice(1, ticket.length).map(row => splitComma(row))[0];
+    let nearby = splitNewline(data[2]);
+    nearby = nearby.slice(1, nearby.length).map(row => splitComma(row));
 
-    // utils
+    // rule utils
     const checkRule = (rule, n) => {
-      return n >= rule.a.min && n <= rule.a.max ||
-      n >= rule.b.min && n <= rule.b.max;
-    }
-    const checkRules = n => {
-      for (let j=0; j<rules.length; j++)
-        if (checkRule(rules[j], n))
-          return true;
-      return false;
-    }
-    const checkRuleAll = (rule, i) => {
-      for (let j=0; j<nearby.length; j++)
-        if (!checkRule(rule, nearby[j][i]))
-          return false;
-      return true;
+      return (n >= rule.a0 && n <= rule.a1) ||
+        (n >= rule.b0 && n <= rule.b1);
+    };
+    const checkRules = n => rules.some(rule => checkRule(rule, n));
+    const checkRuleColumn = (rule, col) => {
+      return nearby.some(ticket => {
+        return !checkRule(rule, ticket[col]);
+      }) ==  false;
     };
 
     // PART 1
@@ -63,56 +59,45 @@ class App {
     console.log(p1);
 
     // PART 2
-    // filter invalid  tickets
     nearby = nearby.filter(ticket => {
-      let ok = true;
-      ticket.forEach((n, i) => {
-        ok = ok && checkRules(n);
-      });
-      return ok;
+      return !ticket.some(n => !checkRules(n));
     });
 
-    // get potential fields
-    let size = nearby[0].length;
-    let fields = new Array(size);
-
-    for (let i=0; i<size; i++) {
-      fields[i] = [];
-      for (let j=0; j<rules.length; j++) {
-        let rule = rules[j];
-        let res = checkRuleAll(rule, i);
-        if (res) {
-          fields[i].push(rule.field);
-        }
-      }
+    // map fields to ticket columns
+    let columns = nearby[0].length;
+    let fields = new Array(columns);
+    for (let col=0; col<columns; col++) {
+      fields[col] = [];
+      rules.forEach(rule => {
+        if (checkRuleColumn(rule, col))
+          fields[col].push(rule.field);
+      });
     }
-
+    
     // filter fields
     loop:
-    while (true) {
-      for (let i=0; i<size; i++) {
-        if (fields[i].length == 1) {
-          let name = fields[i][0];
-          for (let j=0; j<size; j++) {
-            if (j == i)
-              continue;
-            let index = fields[j].indexOf(name);
-            if (index !== -1)
-              fields[j].splice(index, 1);
-          }
+    while (1) {
+      for (let i=0; i<fields.length; i++) {
+        let f = fields[i];
+        if (f.length == 1) {
+          let label = f[0];
+          fields.forEach((f2, j) => {
+            if (i !== j && f2.indexOf(label) !== -1) {
+              f2.splice(f2.indexOf(label), 1);
+            }
+          });
         }
-      }
-
-      for (let i=0; i<size; i++)
-        if (fields[i].length > 1)
-          continue loop;
+      };
+      if (fields.some(f => f.length > 1))
+        continue loop;
       break;
     }
 
     // get result
     ticket = ticket.filter((n, i) => fields[i][0].indexOf('departure') !== -1);
-    console.log(ticket.reduce((a, b) => a * b));
-  }
+    let p2 = ticket.reduce((a, b) => a * b);
+    console.log(p2);
+    }
 }
 
 window.addEventListener('load', () => {
