@@ -38,10 +38,17 @@ function replaceAll(input, a, b) {
   return input.replace(re, b);
 }
 
+function toNumbers(arr) {
+  return arr.map(el => {
+    return isNaN(el.trim()) ? el : parseFloat(el.trim());
+  });
+}
+
 export {
   splitNewline,
   splitDoubleNewline,
   splitComma,
   keyValue,
-  replaceAll
+  replaceAll,
+  toNumbers
 };

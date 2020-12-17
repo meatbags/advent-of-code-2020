@@ -1,8 +1,8 @@
-import { splitNewline, splitDoubleNewline, splitComma } from './util/aoc_utils';
+import { splitNewline, splitDoubleNewline, splitComma, toNumbers } from './util/aoc_utils';
 
 class App {
   constructor() {
-    fetch('data/16.txt')
+    fetch('data/17.txt')
       .then(res => res.text())
       .then(text => {
         this.text = text;
@@ -10,94 +10,211 @@ class App {
           .then(res => res.text())
           .then(text => {
             this.sample = text;
-            // this.solve(this.sample);
-             this.solve(this.text);
-          })
+             //this.solve(this.sample);
+            this.solve(this.text);
+          });
       });
   }
 
   solve(text) {
-    let data = splitDoubleNewline(text);
+    let data = text.trim().split('\n').map(row => row.trim());
+    let state = [[[]]];
+    data.forEach(row => {
+      row.split('').forEach(e => { state[0][0].push(e == '.' ? 0 : 1); });
+    })
 
-    // parse
-    let rules = splitNewline(data[0]);
-    rules = rules.map(rule => {
-      rule = rule.split(': ');
-      let parts = rule[1].replace(/( or)|[a-z:]|(  )/g, '').split(/[ -]/);
-      return {
-        field: rule[0],
-        a0: parseInt(parts[0]),
-        a1: parseInt(parts[1]),
-        b0: parseInt(parts[2]),
-        b1: parseInt(parts[3]),
-      };
-    });
-    let ticket = splitNewline(data[1]);
-    ticket = ticket.slice(1, ticket.length).map(row => splitComma(row))[0];
-    let nearby = splitNewline(data[2]);
-    nearby = nearby.slice(1, nearby.length).map(row => splitComma(row));
+    let size = data[0].length;
+    console.log('SIZE', data.length);
+    console.log(state);
 
-    // rule utils
-    const checkRule = (rule, n) => {
-      return (n >= rule.a0 && n <= rule.a1) ||
-        (n >= rule.b0 && n <= rule.b1);
-    };
-    const checkRules = n => rules.some(rule => checkRule(rule, n));
-    const checkRuleColumn = (rule, col) => {
-      return nearby.some(ticket => {
-        return !checkRule(rule, ticket[col]);
-      }) ==  false;
-    };
-
-    // PART 1
-    let p1 = 0;
-    nearby.forEach(ticket => {
-      ticket.forEach(val => {
-        p1 += !checkRules(val) ? val : 0;
-      });
-    });
-    console.log(p1);
-
-    // PART 2
-    nearby = nearby.filter(ticket => {
-      return !ticket.some(n => !checkRules(n));
-    });
-
-    // map fields to ticket columns
-    let columns = nearby[0].length;
-    let fields = new Array(columns);
-    for (let col=0; col<columns; col++) {
-      fields[col] = [];
-      rules.forEach(rule => {
-        if (checkRuleColumn(rule, col))
-          fields[col].push(rule.field);
-      });
+    // boot up
+    for (let i=0; i<6; i++) {
+      state = this.stepP2(state, size);
+      console.log(state);
+      size += 2;
     }
-    
-    // filter fields
-    loop:
-    while (1) {
-      for (let i=0; i<fields.length; i++) {
-        let f = fields[i];
-        if (f.length == 1) {
-          let label = f[0];
-          fields.forEach((f2, j) => {
-            if (i !== j && f2.indexOf(label) !== -1) {
-              f2.splice(f2.indexOf(label), 1);
+    console.log(this.countP2(state));
+  }
+
+  countP2(state) {
+    let acc = 0;
+    state.forEach(w => {
+      w.forEach(z => {
+        z.forEach(cell => {
+          acc += cell;
+        })
+      });
+    });
+    return acc;
+  }
+
+  stepP2(state, size) {
+    const pad = 1;
+    const xmax = size + pad * 2;
+    const ymax = size + pad * 2;
+    const zmax = state[0].length + pad * 2;
+    const wmax = state.length + pad * 2;
+
+    // create matrix
+    let nextState = [];
+    for (let i=0; i<wmax; i++) {
+      const wState = [];
+      for (let j=0; j<zmax; j++) {
+        const zState = new Array(ymax * xmax);
+        wState.push(zState);
+      }
+      nextState.push(wState);
+    }
+
+    console.log(nextState);
+
+    // create vectors
+    let vectors = [];
+    for (let x=-1; x<=1; x++) {
+      for (let y=-1; y<=1; y++) {
+        for (let z=-1; z<=1; z++) {
+          for (let w=-1; w<=1; w++) {
+            if (!x && !y && !z && !w)
+              continue;
+            vectors.push([x, y, z, w]);
+          }
+        }
+      }
+    }
+
+    // utils input
+    const isValid = (x, y, z, w) => {
+      return x >= 0 && x < size &&
+        y >= 0 && y < size &&
+        z >= 0 && z < state[0].length &&
+        w >= 0 && w < state.length;
+    }
+    const getValue = (x, y, z, w) => {
+      const index = y * size + x;
+      return state[w][z][index];
+    }
+
+    // utils output
+    const putValue = (x, y, z, w) => {
+      nextState[w][z][y * xmax + x] = 1;
+    }
+
+    for (let x=0; x<xmax; x++) {
+      for (let y=0; y<ymax; y++) {
+        for (let z=0; z<zmax; z++) {
+          for (let w=0; w<wmax; w++) {
+            const sx = x - pad;
+            const sy = y - pad;
+            const sz = z - pad;
+            const sw = w - pad;
+            const value = isValid(sx, sy, sz, sw) ? getValue(sx, sy, sz, sw) : 0;
+
+            let count = 0;
+            vectors.forEach(v => {
+              const sx2 = sx + v[0];
+              const sy2 = sy + v[1];
+              const sz2 = sz + v[2];
+              const sw2 = sw + v[3];
+              if (isValid(sx2, sy2, sz2, sw2)) {
+                count += getValue(sx2, sy2, sz2, sw2) ? 1 : 0;
+              }
+            });
+
+            if (value && (count == 2 || count == 3)) {
+              putValue(x, y, z, w);
+            } else if (!value && count == 3) {
+              putValue(x, y, z, w);
+            }
+          }
+        }
+      }
+    }
+
+    return nextState;
+  }
+
+
+  stepP1(state, size) {
+    const pad = 1;
+    const xmax = size + pad * 2;
+    const ymax = size + pad * 2;
+    const zmax = state.length + pad * 2;
+
+    // create matrix
+    let nextState = [];
+    for (let i=0; i<zmax; i++) {
+      nextState.push(new Array(ymax * xmax))
+    }
+
+    console.log(nextState);
+
+    // create vectors
+    let vectors = [];
+    for (let x=-1; x<=1; x++)
+      for (let y=-1; y<=1; y++)
+        for (let z=-1; z<=1; z++) {
+          if (!x && !y && !z)
+            continue;
+          vectors.push([x, y, z]);
+        }
+
+    // utils input
+    const isValid = (x, y, z) => {
+      return x >= 0 && x < size &&
+        y >= 0 && y < size &&
+        z >= 0 && z < state.length;
+    }
+    const getValue = (x, y, z) => {
+      const index = y * size + x;
+      return state[z][index];
+    }
+
+    // utils output
+    const putValue = (x, y, z) => {
+      const index = y * xmax + x;
+      nextState[z][index] = 1;
+    }
+
+    for (let x=0; x<xmax; x++) {
+      for (let y=0; y<ymax; y++) {
+        for (let z=0; z<zmax; z++) {
+          const sx = x - pad;
+          const sy = y - pad;
+          const sz = z - pad;
+          const value = isValid(sx, sy, sz) ? getValue(sx, sy, sz) : 0;
+          let count = 0;
+
+          vectors.forEach(v => {
+            const sx2 = sx + v[0];
+            const sy2 = sy + v[1];
+            const sz2 = sz + v[2];
+            if (isValid(sx2, sy2, sz2)) {
+              count += getValue(sx2, sy2, sz2) ? 1 : 0;
             }
           });
+
+          if (value && (count == 2 || count == 3)) {
+            putValue(x, y, z);
+          } else if (!value && (count == 3)) {
+            putValue(x, y, z);
+          }
         }
-      };
-      if (fields.some(f => f.length > 1))
-        continue loop;
-      break;
+      }
     }
 
-    // get result
-    ticket = ticket.filter((n, i) => fields[i][0].indexOf('departure') !== -1);
-    let p2 = ticket.reduce((a, b) => a * b);
-    console.log(p2);
-    }
+    return nextState;
+  }
+
+  countP1(state) {
+    let acc = 0;
+    state.forEach(arr => {
+      arr.forEach(cell => {
+        acc += cell;
+      })
+    });
+    return acc;
+  }
+
 }
 
 window.addEventListener('load', () => {
