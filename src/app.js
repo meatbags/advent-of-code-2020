@@ -2,7 +2,7 @@ import { splitNewline, splitDoubleNewline, splitComma, toNumbers } from './util/
 
 class App {
   constructor() {
-    fetch('data/17.txt')
+    fetch('data/19.txt')
       .then(res => res.text())
       .then(text => {
         this.text = text;
@@ -10,211 +10,140 @@ class App {
           .then(res => res.text())
           .then(text => {
             this.sample = text;
-             //this.solve(this.sample);
+            this.solve(this.sample);
             this.solve(this.text);
           });
       });
   }
 
   solve(text) {
-    let data = text.trim().split('\n').map(row => row.trim());
-    let state = [[[]]];
-    data.forEach(row => {
-      row.split('').forEach(e => { state[0][0].push(e == '.' ? 0 : 1); });
-    })
-
-    let size = data[0].length;
-    console.log('SIZE', data.length);
-    console.log(state);
-
-    // boot up
-    for (let i=0; i<6; i++) {
-      state = this.stepP2(state, size);
-      console.log(state);
-      size += 2;
-    }
-    console.log(this.countP2(state));
-  }
-
-  countP2(state) {
-    let acc = 0;
-    state.forEach(w => {
-      w.forEach(z => {
-        z.forEach(cell => {
-          acc += cell;
-        })
+    let sections = text.trim().split('\r\n\r\n');
+    let rules = {};
+    sections[0].split('\r\n').forEach(row => {
+      const key = row.split(":")[0];
+      const val = row.split(": ")[1].split(/[ ]/g).map(e => {
+        return !isNaN(e) ? parseFloat(e) : e.replace(/"/g, '');
       });
+      rules[key] = val;
     });
-    return acc;
-  }
+    let data = sections[1].split('\r\n');
 
-  stepP2(state, size) {
-    const pad = 1;
-    const xmax = size + pad * 2;
-    const ymax = size + pad * 2;
-    const zmax = state[0].length + pad * 2;
-    const wmax = state.length + pad * 2;
+    // regex builder
+    const getRegex = rule => {
+      // char found
+      if (isNaN(rule[0]))
+        return rule[0];
 
-    // create matrix
-    let nextState = [];
-    for (let i=0; i<wmax; i++) {
-      const wState = [];
-      for (let j=0; j<zmax; j++) {
-        const zState = new Array(ymax * xmax);
-        wState.push(zState);
-      }
-      nextState.push(wState);
-    }
-
-    console.log(nextState);
-
-    // create vectors
-    let vectors = [];
-    for (let x=-1; x<=1; x++) {
-      for (let y=-1; y<=1; y++) {
-        for (let z=-1; z<=1; z++) {
-          for (let w=-1; w<=1; w++) {
-            if (!x && !y && !z && !w)
-              continue;
-            vectors.push([x, y, z, w]);
+      // build regex recursively
+      let res = '';
+      rule.forEach(i => {
+        if (i == '|')
+          res += i;
+        else {
+          const nextRule = rules[i];
+          if (nextRule.loop !== undefined) {
+            if (++nextRule.loop <= 5)
+              res += getRegex(nextRule);
+          } else {
+            res += getRegex(nextRule);
           }
         }
-      }
-    }
+      });
+      return `(${res})`;
+    };
 
-    // utils input
-    const isValid = (x, y, z, w) => {
-      return x >= 0 && x < size &&
-        y >= 0 && y < size &&
-        z >= 0 && z < state[0].length &&
-        w >= 0 && w < state.length;
-    }
-    const getValue = (x, y, z, w) => {
-      const index = y * size + x;
-      return state[w][z][index];
-    }
+    // Part 1
+    let p1 = 0;
+    let re1 = new RegExp(getRegex(rules[0]), 'g');
+    data.forEach(row => {
+      if (!row.replace(re1, ''))
+        p1 += 1;
+    });
 
-    // utils output
-    const putValue = (x, y, z, w) => {
-      nextState[w][z][y * xmax + x] = 1;
-    }
+    // Part 2
+    rules[8] = [42, '|', 42, 8];
+    rules[11] = [42, 31, '|', 42, 11, 31];
+    rules[8].loop = 0;
+    rules[11].loop = 0;
 
-    for (let x=0; x<xmax; x++) {
-      for (let y=0; y<ymax; y++) {
-        for (let z=0; z<zmax; z++) {
-          for (let w=0; w<wmax; w++) {
-            const sx = x - pad;
-            const sy = y - pad;
-            const sz = z - pad;
-            const sw = w - pad;
-            const value = isValid(sx, sy, sz, sw) ? getValue(sx, sy, sz, sw) : 0;
+    let p2 = 0;
+    let re2 = new RegExp(getRegex(rules[0]), 'g');
+    data.forEach(row => {
+      if (!row.replace(re2, ''))
+        p2 += 1;
+    });
 
-            let count = 0;
-            vectors.forEach(v => {
-              const sx2 = sx + v[0];
-              const sy2 = sy + v[1];
-              const sz2 = sz + v[2];
-              const sw2 = sw + v[3];
-              if (isValid(sx2, sy2, sz2, sw2)) {
-                count += getValue(sx2, sy2, sz2, sw2) ? 1 : 0;
-              }
-            });
-
-            if (value && (count == 2 || count == 3)) {
-              putValue(x, y, z, w);
-            } else if (!value && count == 3) {
-              putValue(x, y, z, w);
-            }
-          }
-        }
-      }
-    }
-
-    return nextState;
+    console.log(p1, p2);
   }
 
+  p1() {
+    //   let data = splitNewline(text);
+      let sections = splitDoubleNewline(text);
+      let rulesRows = splitNewline(sections[0]);
+      let data = splitNewline(sections[1]);
+      let rules = {};
 
-  stepP1(state, size) {
-    const pad = 1;
-    const xmax = size + pad * 2;
-    const ymax = size + pad * 2;
-    const zmax = state.length + pad * 2;
 
-    // create matrix
-    let nextState = [];
-    for (let i=0; i<zmax; i++) {
-      nextState.push(new Array(ymax * xmax))
-    }
+      rulesRows.forEach(row => {
+        const key = row.split(":")[0];
+        const val = row.split(": ")[1].split(/[ ]/g).map(e => {
+          return !isNaN(e) ? parseFloat(e) : e.replace(/"/g, '');
+        });
+        rules[key] = val;
+      });
 
-    console.log(nextState);
-
-    // create vectors
-    let vectors = [];
-    for (let x=-1; x<=1; x++)
-      for (let y=-1; y<=1; y++)
-        for (let z=-1; z<=1; z++) {
-          if (!x && !y && !z)
-            continue;
-          vectors.push([x, y, z]);
-        }
-
-    // utils input
-    const isValid = (x, y, z) => {
-      return x >= 0 && x < size &&
-        y >= 0 && y < size &&
-        z >= 0 && z < state.length;
-    }
-    const getValue = (x, y, z) => {
-      const index = y * size + x;
-      return state[z][index];
-    }
-
-    // utils output
-    const putValue = (x, y, z) => {
-      const index = y * xmax + x;
-      nextState[z][index] = 1;
-    }
-
-    for (let x=0; x<xmax; x++) {
-      for (let y=0; y<ymax; y++) {
-        for (let z=0; z<zmax; z++) {
-          const sx = x - pad;
-          const sy = y - pad;
-          const sz = z - pad;
-          const value = isValid(sx, sy, sz) ? getValue(sx, sy, sz) : 0;
+      let getCount = rule => {
+        if (rule[0] == "a" || rule[0] == "b") {
+          return 1;
+        } else {
           let count = 0;
-
-          vectors.forEach(v => {
-            const sx2 = sx + v[0];
-            const sy2 = sy + v[1];
-            const sz2 = sz + v[2];
-            if (isValid(sx2, sy2, sz2)) {
-              count += getValue(sx2, sy2, sz2) ? 1 : 0;
+          for (let i=0; i<rule.length; i++) {
+            let index = rule[i];
+            if (index == "|") {
+              break;
+            } else {
+              count += getCount(rules[index]);
             }
-          });
-
-          if (value && (count == 2 || count == 3)) {
-            putValue(x, y, z);
-          } else if (!value && (count == 3)) {
-            putValue(x, y, z);
           }
+          return count;
         }
       }
-    }
 
-    return nextState;
+      let getRegex = rule => {
+        if (rule[0] == "a" || rule[0] == "b") {
+          return rule[0];
+        } else {
+          let res = "";
+          for (let i=0; i<rule.length; i++) {
+            let index = rule[i];
+            if (index == "|")
+              res += index;
+            else
+              res += getRegex(rules[index]);
+          }
+          return '(' + res + ')';
+        }
+      };
+
+      console.log(rules);
+
+      let exp = getRegex(rules[0]);//.split('|');
+      let count = getCount(rules[0]);
+
+      console.log(exp);
+      console.log(count);
+      const re = new RegExp(exp, 'g');
+
+      let p1 = 0;
+      data.forEach(row => {
+        if (row.search(re) !== -1 && row.length == count) {
+          p1 += 1;
+        }
+      });
+
+      console.log(p1);
+      return p1;
   }
-
-  countP1(state) {
-    let acc = 0;
-    state.forEach(arr => {
-      arr.forEach(cell => {
-        acc += cell;
-      })
-    });
-    return acc;
-  }
-
 }
 
 window.addEventListener('load', () => {
